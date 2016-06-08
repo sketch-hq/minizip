@@ -1,3 +1,9 @@
+#Bohemian Notes:
+We currently only use three of the source files from minizip; zip.c, unzip.c and ioapi.c (plus the corresponding headers). There is a pile of stuff in here we're very unlikely to ever use (Visual Studio 2008 project files...). I've just left them though as removing them could cause us problems if we ever merge in fixes from the original [fork](https://github.com/nmoinvaz/minizip).
+
+
+#Original Readme:
+
 Minizip zlib contribution that includes:
 
 - AES encryption
