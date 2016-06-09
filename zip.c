@@ -1133,7 +1133,10 @@ extern int ZEXPORT zipOpenNewFileInZip4_64(zipFile file, const char* filename, c
     zi->ci.pos_zip64extrainfo = 0;
 
     /* Write the local header */
-    err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (uLong)LOCALHEADERMAGIC, 4);
+    if (err == ZIP_OK)
+    {
+      err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (uLong)LOCALHEADERMAGIC, 4);
+    }
 
     if (err == ZIP_OK)
     {
@@ -1204,10 +1207,16 @@ extern int ZEXPORT zipOpenNewFileInZip4_64(zipFile file, const char* filename, c
         zi->ci.pos_zip64extrainfo = ZTELL64(zi->z_filefunc, zi->filestream);
 
         err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (short)headerid, 2);
-        err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (short)datasize, 2);
+        if (Z_OK == err) {
+          err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (short)datasize, 2);
+        }
 
-        err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (ZPOS64_T)uncompressed_size, 8);
-        err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (ZPOS64_T)compressed_size, 8);
+        if (Z_OK == err) {
+          err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (ZPOS64_T)uncompressed_size, 8);
+        }
+        if (Z_OK == err) {
+          err = zip64local_putValue(&zi->z_filefunc, zi->filestream, (ZPOS64_T)compressed_size, 8);
+        }
     }
 #ifdef HAVE_AES
     /* Write the AES extended info */
@@ -1610,9 +1619,11 @@ extern int ZEXPORT zipCloseFileInZipRaw64(zipFile file, ZPOS64_T uncompressed_si
                     zi->ci.stream.avail_out = (uInt)Z_BUFSIZE;
                     zi->ci.stream.next_out = zi->ci.buffered_data;
                 }
-                total_out_before = zi->ci.stream.total_out;
-                err = deflate(&zi->ci.stream, Z_FINISH);
-                zi->ci.pos_in_buffered_data += (uInt)(zi->ci.stream.total_out - total_out_before);
+                if (ZIP_OK == err) {
+                  total_out_before = zi->ci.stream.total_out;
+                  err = deflate(&zi->ci.stream, Z_FINISH);
+                  zi->ci.pos_in_buffered_data += (uInt)(zi->ci.stream.total_out - total_out_before);
+                }
             }
         }
         else if (zi->ci.compression_method == Z_BZIP2ED)
@@ -1748,7 +1759,7 @@ extern int ZEXPORT zipCloseFileInZipRaw64(zipFile file, ZPOS64_T uncompressed_si
         if (zi->ci.pos_local_header >= 0xffffffff)
         {
             zip64local_putValue_inmemory(p, zi->ci.pos_local_header, 8);
-            p += 8;
+//            p += 8;
         }
 
         zi->ci.size_centralextrafree -= datasize + 4;
