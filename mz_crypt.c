@@ -38,7 +38,6 @@ uint32_t mz_crypt_crc32_update(uint32_t value, const uint8_t *buf, int32_t size)
 #  if (ZLIB_VERNUM < 0x1270)
     typedef unsigned long z_crc_t;
 #  else
-    typedef uint32_t z_crc_t;
 #  endif
     return (uint32_t)ZLIB_PREFIX(crc32)((z_crc_t)value, buf, (uInt)size);
 #elif defined(HAVE_LZMA)
