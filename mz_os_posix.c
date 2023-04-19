@@ -153,7 +153,7 @@ int32_t mz_os_rand(uint8_t *buf, int32_t size) {
     }
 
     while (i < size)
-        buf[i++] = (rand() >> 7) & 0xff;
+        buf[i++] = (arc4random() >> 7) & 0xff;
 
     return size;
 }
